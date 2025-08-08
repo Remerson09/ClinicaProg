@@ -1,0 +1,59 @@
+  <!DOCTYPE html>
+  <html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8">
+    <title>Agendar Consulta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+  <div class="container mt-4">
+    <h3>Confirmar Agendamento</h3>
+    <hr/>
+
+    <!-- Detalhes do Horário Selecionado (informações vêm do objeto 'agenda' ) -->
+    <div class="card mb-4">
+      <div class="card-header fw-bold">
+        Horário Selecionado
+      </div>
+      <div class="card-body">
+        <p><strong>Médico(a):</strong> <span th:text="${agenda.medico.nome}">Nome do Médico</span></p>
+
+        <p><strong>Data e Hora:</strong>
+          <span th:text="${#temporals.format(agenda.dataHoraInicio, 'dd/MM/yyyy HH:mm')}">Data e Hora</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Exibe uma mensagem de erro geral, se houver -->
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <!-- Formulário de Agendamento (envia para /agendas/agendar) -->
+    <form th:action="@{/agendas/agendar}" th:object="${consulta}" method="post">
+
+      <!-- Campo oculto para enviar o ID da agenda que está sendo agendada. Essencial! -->
+      <input type="hidden" name="agendaId" th:value="${agenda.id}"/>
+
+      <div class="mb-3">
+        <label for="paciente" class="form-label">Selecione o Paciente:</label>
+        <!--
+          O campo 'paciente' corresponde ao atributo 'paciente' da entidade Consulta.
+          A lista de 'pacientes' é enviada pelo controller.
+        -->
+        <select id="paciente" th:field="*{paciente}" class="form-select" required>
+          <option value="">-- Selecione --</option>
+          <option th:each="pac : ${pacientes}"
+                  th:value="${pac.id}"
+                  th:text="${pac.nome}">
+            Nome do Paciente
+          </option>
+        </select>
+        <!-- Exibe erro de validação específico para o campo 'paciente' -->
+        <div th:if="${#fields.hasErrors('paciente')}" th:errors="*{paciente}" class="text-danger small"></div>
+      </div>
+
+          <button type="submit" class="btn btn-primary">Confirmar Agendamento</button>
+          <a th:href="@{/agendas/disponiveis}" class="btn btn-secondary">Voltar (Não Agendar)</a>
+    </form>
+  </div>
+  </body>
+  </html>

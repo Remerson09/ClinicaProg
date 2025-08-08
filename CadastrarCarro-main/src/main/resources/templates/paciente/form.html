@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${paciente.id == null} ? 'Novo Paciente' : 'Editar Paciente'"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="overlay"></div>
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h2 th:text="${paciente.id == null} ? 'Novo Paciente' : 'Editar Paciente'"></h2>
+        </div>
+        <div class="card-body">
+            <!-- Formulário agora usa th:object para binding -->
+            <form th:action="@{${paciente.id != null} ? '/pacientes/atualizar/' + ${paciente.id} : '/pacientes/salvar'}"
+                  th:object="${paciente}" method="post">
+
+                <!-- Campo oculto para o ID, usando th:field -->
+                <input type="hidden" th:field="*{id}">
+
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome</label>
+                    <!-- Input usando th:field e classes de validação Bootstrap -->
+                    <input type="text" id="nome" class="form-control" th:field="*{nome}"
+                           th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid' : ''">
+                    <!-- Exibição de erros de validação -->
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}">
+                        Erro no nome
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="telefone" class="form-label">Telefone</label>
+                    <!-- Input usando th:field e classes de validação Bootstrap -->
+                    <input type="text" id="telefone" class="form-control" th:field="*{telefone}"
+                           th:classappend="${#fields.hasErrors('telefone')} ? 'is-invalid' : ''">
+                    <!-- Exibição de erros de validação -->
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}">
+                        Erro no telefone
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary me-md-2">
+                        <span th:text="${paciente.id == null} ? 'Salvar' : 'Atualizar'"></span>
+                    </button>
+                    <a th:href="@{/pacientes}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

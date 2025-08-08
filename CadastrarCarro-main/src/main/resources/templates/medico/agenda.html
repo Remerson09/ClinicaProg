@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Agenda do Médico</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h3>Agenda de Dr(a ). <span th:text="${medico.nome}">Nome do Médico</span></h3>
+
+    <!-- Verificação para não dar erro se 'especialidade' não existir na entidade Medico -->
+    <p th:if="${medico.especialidade != null}"><strong>Especialidade:</strong> <span th:text="${medico.especialidade}">Especialidade</span></p>
+    <hr/>
+
+    <!-- ✅ MENSAGENS FLASH DE SUCESSO OU ERRO -->
+    <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+    <!-- Área de botões de ação no topo da página -->
+    <div class="mb-3">
+        <a th:href="@{/agendas/nova}" class="btn btn-primary">Cadastrar Nova Disponibilidade</a>
+        <a th:href="@{/agendas/disponiveis}" class="btn btn-info">Ver Todos os Horários Disponíveis</a>
+    </div>
+
+    <div th:if="${agendaDoMedico.isEmpty()}">
+        <div class="alert alert-info">Nenhum horário cadastrado para este médico.</div>
+    </div>
+
+    <table class="table table-striped" th:if="${!agendaDoMedico.isEmpty()}">
+        <thead>
+        <tr>
+            <th>Data e Hora Início</th>
+            <th>Data e Hora Fim</th>
+            <th>Status</th>
+            <th>Paciente</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="agenda : ${agendaDoMedico}">
+            <td th:text="${#temporals.format(agenda.dataHoraInicio, 'dd/MM/yyyy HH:mm')}"></td>
+            <td th:text="${#temporals.format(agenda.dataHoraFim, 'dd/MM/yyyy HH:mm')}"></td>
+            <td>
+                <span th:text="${agenda.status.toString()}"
+                      th:classappend="${agenda.status.toString() == 'DISPONIVEL'} ? 'badge bg-success' :
+                                     (${agenda.status.toString() == 'AGENDADO'} ? 'badge bg-warning text-dark' : 'badge bg-secondary')">
+                </span>
+            </td>
+            <td th:text="${agenda.consulta != null and agenda.consulta.paciente != null ? agenda.consulta.paciente.nome : ''}"></td>
+
+            <td>
+                <a th:if="${agenda.status.toString() == 'DISPONIVEL'}" th:href="@{/agendas/editar/{id}(id=${agenda.id})}" class="btn btn-sm btn-warning">Editar</a>
+                <a th:if="${agenda.status.toString() != 'CANCELADO'}" th:href="@{/agendas/cancelar/{id}(id=${agenda.id})}" class="btn btn-sm btn-danger">Cancelar</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/medicos}" class="btn btn-secondary mt-3">Voltar para a Lista de Médicos</a>
+</div>
+</body>
+</html>

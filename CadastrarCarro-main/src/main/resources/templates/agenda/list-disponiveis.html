@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Horários Disponíveis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h3>Horários Disponíveis para Agendamento</h3>
+    <p>Selecione um horário abaixo para agendar sua consulta.</p>
+    <hr/>
+
+    <!-- Exibe a mensagem de sucesso (ex: "Disponibilidade cadastrada com sucesso!" ) -->
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <!-- Exibe uma mensagem de erro, se houver -->
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <!-- Verifica se a lista de agendas disponíveis está vazia -->
+    <div th:if="${agendasDisponiveis.isEmpty()}">
+        <div class="alert alert-info">
+            Não há horários disponíveis no momento. Por favor, cadastre uma nova disponibilidade ou verifique mais tarde.
+        </div>
+    </div>
+
+    <!-- Se a lista não estiver vazia, exibe a tabela de horários -->
+    <table class="table table-hover" th:if="${!agendasDisponiveis.isEmpty()}">
+        <thead class="table-light">
+        <tr>
+            <th>Médico</th>
+            <th>Data</th>
+            <th>Horário</th>
+            <th>Ação</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Loop para criar uma linha para cada horário disponível na lista -->
+        <tr th:each="agenda : ${agendasDisponiveis}">
+            <td th:text="${agenda.medico.nome}">Nome do Médico</td>
+            <td th:text="${#temporals.format(agenda.dataHoraInicio, 'dd/MM/yyyy')}">Data</td>
+            <td th:text="${#temporals.format(agenda.dataHoraInicio, 'HH:mm')} + ' - ' + ${#temporals.format(agenda.dataHoraFim, 'HH:mm')}">Horário</td>
+            <td>
+                <!-- O link "Agendar" leva para o formulário de agendamento, passando o ID da agenda -->
+                <a th:href="@{/agendas/agendar/{agendaId}(agendaId=${agenda.id})}" class="btn btn-success btn-sm">
+                    Agendar
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Botão para voltar ou adicionar nova disponibilidade -->
+    <a th:href="@{/agendas/nova}" class="btn btn-primary mt-3">Cadastrar Nova Disponibilidade</a>
+    <a th:href="@{/}" class="btn btn-secondary mt-3">Voltar à Página Inicial</a>
+</div>
+</body>
+</html>
